@@ -44,9 +44,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const rooms = await Room.find({});
-
-        const roomNumber = rooms.length + 1;
+        const lastRoom = await Room.findOne({}).sort({ roomNumber: -1 });
+        const roomNumber = lastRoom ? lastRoom.roomNumber + 1 : 1;
 
         const newRoom = await Room.create({
             roomNumber,
