@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     const connectDb = await dbConnect()
 
     if (!connectDb) {
-        NextResponse.json({ error: "Database Error" }, { status: 404 });
+        return NextResponse.json({ error: "Database Error" }, { status: 404 });
     }
 
     try {
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Email or Password cannot be empty!" }, { status: 404 });
         }
 
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select('+password');
 
         if (!user) {
             return NextResponse.json({ error: "User not exist!" }, { status: 404 });
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
         const response = NextResponse.json({
             message: "Login Has Been Succesful",
-            user: { id: user.userId, email: user.email, role: user.role }
+            loginToken: token
         });
 
         response.cookies.set("token", token, {
@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
         return response;
 
     } catch (error) {
-        NextResponse.json({ error }, { status: 500 });
         console.log(error);
+        return NextResponse.json({ error }, { status: 500 });
     }
 
 }
