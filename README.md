@@ -21,30 +21,6 @@ GuestHub is a Next.js-based web application designed to manage hotel and accommo
 - JSON Web Token (JWT)
 - bcryptjs
 
-## Project Structure
-
-```text
-app/
-├── (pages)/
-│   ├── auth/
-│   └── dashboard/
-│       ├── admin/
-│       ├── customers/
-│       ├── payment/
-│       ├── reports/
-│       └── reservation/
-├── api/
-│   ├── auth/
-│   ├── reservation/
-│   ├── room/
-│   └── user/
-├── lib/
-├── model/
-└── globals.css
-
-types/
-```
-
 ## Installation
 
 1. Install dependencies:
@@ -54,11 +30,6 @@ npm install
 ```
 
 2. Set up environment variables:
-
-```env
-MONGODB_URI=mongodb://localhost:27017/guesthub
-JWT=your-secret-key
-```
 
 3. Start the development server:
 
