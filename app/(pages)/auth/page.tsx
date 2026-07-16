@@ -1,13 +1,17 @@
 "use client";
 
+import axios from "axios";
 import { Mail, LockKeyhole, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation"
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const router = useRouter();
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -16,25 +20,28 @@ export default function Login() {
   const loginUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const request = await fetch("http://localhost:3000/api/auth/login/", {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-      });
+      const request = await axios.post("http://localhost:3000/api/auth/login", { email, password }, { withCredentials: true });
 
-      if (request.ok) {
+      if (request) {
         toast.success("Login Has Been Succesful");
+        router.push("/dashboard");
       } else {
         toast.error("Unknown Error");
       }
     } catch (error) {
-      if (error instanceof Error) {
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message;
+        toast.error(message);
+      } else if (error instanceof Error) {
         toast.error(error.message);
       } else {
         toast.error(String(error));
       }
     }
-  };
-
+  }
   return (
     <div className="w-full min-h-screen bg-blue-50 flex justify-center items-center p-6">
       <div className="w-full max-w-4xl h-[560px] rounded-3xl overflow-hidden shadow-xl flex bg-white">
