@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "Invalid E-mail or Password!" }, { status: 404 });
         }
 
-        const token = jwt.sign({ userId: user.userId, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+        const token = jwt.sign({ userId: user.userId, name: user.name, surname: user.surname, role: user.role, email: user.email },
+            JWT_SECRET, { expiresIn: "7d" });
 
         const response = NextResponse.json({
             message: "Login Has Been Succesful",
