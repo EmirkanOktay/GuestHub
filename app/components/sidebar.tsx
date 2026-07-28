@@ -3,7 +3,6 @@ import { sideBarElements } from "../utils/sideBarElements";
 
 async function Sidebar() {
     const user = await getCurrentUser();
-
     return (
         <div>
 
