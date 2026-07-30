@@ -1,6 +1,11 @@
+
 import Link from "next/link";
 import { getCurrentUser } from "../hooks/getCookies";
 import { sideBarElements } from "../utils/sideBarElements";
+import { LogOut } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import LogoutButton from "./logoutButton";
 
 export default async function Sidebar() {
     const user = await getCurrentUser();
@@ -37,9 +42,12 @@ export default async function Sidebar() {
 
             {user && (
                 <div className="relative z-10 px-6 py-5 border-t border-blue-400/20">
-                    <p className="text-blue-100 text-xs truncate">
-                        {user.email ?? user.name ?? "Kullanıcı"}
-                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                        <p className="text-blue-100 text-xs truncate">
+                            {user.email ?? user.name ?? "Kullanıcı"}
+                        </p>
+                        <LogoutButton />
+                    </div>
                 </div>
             )}
         </aside>
