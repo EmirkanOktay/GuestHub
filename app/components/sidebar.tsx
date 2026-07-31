@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "../hooks/getCookies";
 import { sideBarElements } from "../utils/sideBarElements";
-import { LogOut } from "lucide-react";
 import LogoutButton from "./logoutButton";
 
 export default async function Sidebar() {

@@ -28,6 +28,6 @@ export const sideBarElements: SidebarItem[] = [
     { id: 9, value: "Edit Customer", redirect: "/customers/edit", role: "Employee", icon: UserCog },
     { id: 10, value: "Create Invoice", redirect: "/payment/create-invoice", role: "Employee", icon: FileText },
     { id: 11, value: "Reservation", redirect: "/dashboard/reservation/reservation-list", role: "", icon: CalendarRange },
-    { id: 12, value: "New Reservation", redirect: "/reservation/new-reservation", role: "", icon: CalendarPlus },
+    { id: 12, value: "New Reservation", redirect: "/dashboard/reservation/new-reservation", role: "", icon: CalendarPlus },
     { id: 13, value: "Check In/ Check Out", redirect: "/reservation/checkin-checkout", role: "", icon: LogIn },
 ];
