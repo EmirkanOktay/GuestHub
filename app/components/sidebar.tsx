@@ -3,8 +3,6 @@ import Link from "next/link";
 import { getCurrentUser } from "../hooks/getCookies";
 import { sideBarElements } from "../utils/sideBarElements";
 import { LogOut } from "lucide-react";
-import axios from "axios";
-import toast from "react-hot-toast";
 import LogoutButton from "./logoutButton";
 
 export default async function Sidebar() {

@@ -16,11 +16,10 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-
-        const reservation = await Reservation.find({});
-
+        const reservation = await Reservation.find({}).populate("customer", "name surname email phone").populate("rooms");
         return NextResponse.json({ reservation });
     } catch (error) {
+        console.log(error)
         return NextResponse.json({ error }, { status: 500 });
     }
 }
