@@ -14,23 +14,8 @@ import { Reservation } from "../types/ReservationType";
 import { STATUS_DOT, STATUS_STYLES, STATUS_TABS } from "../utils/status";
 import { PAYMENT_LABELS } from "../utils/paymentLabel";
 import { ROOM_TYPE_LABELS } from "../utils/RoomLabel";
-
-function formatCurrency(value?: number) {
-  if (value === undefined || value === null) return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatDate(value: string) {
-  return new Date(value).toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+import { formatDate } from "../utils/formatDate";
+import { formatCurrency } from "../utils/formatCurrency";
 
 function initials(name?: string, surname?: string) {
   if (!name || !surname) return "—";
