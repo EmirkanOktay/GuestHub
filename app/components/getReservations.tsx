@@ -11,43 +11,9 @@ import {
   BedDouble,
 } from "lucide-react";
 import { Reservation } from "../types/ReservationType";
-
-const STATUS_STYLES: Record<string, string> = {
-  Upcoming: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20",
-  Active:
-    "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20",
-  Completed: "bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/20",
-  Cancelled: "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20",
-};
-
-const STATUS_DOT: Record<string, string> = {
-  Upcoming: "bg-blue-500",
-  Active: "bg-emerald-500",
-  Completed: "bg-slate-400",
-  Cancelled: "bg-rose-500",
-};
-
-const PAYMENT_LABELS: Record<string, string> = {
-  Cash: "Cash",
-  CreditCard: "Credit Cart",
-  DebitCard: "Debit Cart",
-  BankTransfer: "Bank Transfer",
-};
-
-const ROOM_TYPE_LABELS: Record<string, string> = {
-  Single: "Single",
-  Double: "Double",
-  Suite: "Suite",
-  Deluxe: "Deluxe",
-};
-
-const STATUS_TABS = [
-  "All",
-  "Upcoming",
-  "Active",
-  "Completed",
-  "Cancelled",
-] as const;
+import { STATUS_DOT, STATUS_STYLES, STATUS_TABS } from "../utils/status";
+import { PAYMENT_LABELS } from "../utils/paymentLabel";
+import { ROOM_TYPE_LABELS } from "../utils/RoomLabel";
 
 function formatCurrency(value?: number) {
   if (value === undefined || value === null) return "—";
