@@ -5,6 +5,7 @@ import { createCustomer, PaymentMethod } from "../types/CustomerTypes";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { PAYMENT_LABELS } from "../utils/paymentLabel";
 
 const initialValues = {
   name: "",
@@ -23,13 +24,15 @@ const initialValues = {
   notes: "",
   checkInDate: "",
   checkOutDate: "",
-  paymentMethod: "",
+  paymentMethod: undefined,
   paidAmount: 0,
   guestCount: 0,
 };
 
 function CreateCustomer() {
   const [values, setValues] = useState<createCustomer>(initialValues);
+
+  const paymentMethods = ["Cash", "Credit Card", "Debit Card", "Bank Transfer"];
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -231,14 +234,14 @@ function CreateCustomer() {
                 <Input
                   label="Guest Count"
                   type="number"
-                  value={values.guestCount}
+                  value={values.guestCount?.toString()}
                   onChange={handleChange}
                 />
 
                 <Input
                   label="Paid Amount"
                   type="number"
-                  value={values.paidAmount?.toString() ?? ""}
+                  value={values.paidAmount?.toString()}
                   onChange={handleChange}
                 />
 
@@ -247,11 +250,15 @@ function CreateCustomer() {
                     Payment Method
                   </label>
 
-                  <select className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
-                    <option>Cash</option>
-                    <option>Credit Card</option>
-                    <option>Debit Card</option>
-                    <option>Bank Transfer</option>
+                  <select
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                  >
+                    {paymentMethods.map((method: string, index: number) => (
+                      <option value={method} key={index}>
+                        {method}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -266,6 +273,8 @@ function CreateCustomer() {
                 </label>
 
                 <textarea
+                  value={values.notes}
+                  onChange={handleChange}
                   rows={5}
                   placeholder="Additional customer notes..."
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
