@@ -1,13 +1,15 @@
 "use client";
 
 import { User, Mail, Phone, MapPin, CreditCard, Calendar } from "lucide-react";
-import { createCustomer, PaymentMethod } from "../types/CustomerTypes";
+import {
+  createCustomer as CreateCustomerInput,
+  PaymentMethod,
+} from "../types/CustomerTypes";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { PAYMENT_LABELS } from "../utils/paymentLabel";
 
-const initialValues = {
+const initialValues: CreateCustomerInput = {
   name: "",
   surname: "",
   email: "",
@@ -24,13 +26,13 @@ const initialValues = {
   notes: "",
   checkInDate: "",
   checkOutDate: "",
-  paymentMethod: undefined,
+  paymentMethod: "Cash" as PaymentMethod,
   paidAmount: 0,
   guestCount: 0,
 };
 
 function CreateCustomer() {
-  const [values, setValues] = useState<createCustomer>(initialValues);
+  const [values, setValues] = useState<CreateCustomerInput>(initialValues);
 
   const paymentMethods = ["Cash", "Credit Card", "Debit Card", "Bank Transfer"];
 
@@ -41,6 +43,7 @@ function CreateCustomer() {
   ) => {
     const { name, value, type } = e.target;
 
+    // Nested fields, e.g. "address.country"
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setValues((prev) => ({
@@ -54,6 +57,7 @@ function CreateCustomer() {
       return;
     }
 
+    // Numeric fields (guestCount, paidAmount)
     if (type === "number") {
       setValues((prev) => ({
         ...prev,
@@ -62,6 +66,7 @@ function CreateCustomer() {
       return;
     }
 
+    // Plain fields
     setValues((prev) => ({
       ...prev,
       [name]: value,
@@ -69,14 +74,40 @@ function CreateCustomer() {
   };
 
   const createCustomer = async () => {
-    const emptyField = (
-      Object.keys(initialValues) as Array<keyof createCustomer>
-    ).find((field) => !values[field]);
+    // Flat required fields (address and numeric fields are checked separately)
+    const requiredFields: (keyof CreateCustomerInput)[] = [
+      "name",
+      "surname",
+      "email",
+      "phone",
+      "identityNumber",
+      "birthDate",
+      "nationality",
+      "currentRoom",
+      "checkInDate",
+      "checkOutDate",
+      "paymentMethod",
+    ];
+
+    const emptyField = requiredFields.find((field) => !values[field]);
 
     if (emptyField) {
       toast.error(`"${emptyField}" field cannot be empty`);
       return;
     }
+
+    const requiredAddressFields: (keyof NonNullable<
+      CreateCustomerInput["address"]
+    >)[] = ["country", "city", "details"];
+
+    const emptyAddressField = requiredAddressFields.find(
+      (field) => !values.address?.[field],
+    );
+    if (emptyAddressField) {
+      toast.error(`Address "${emptyAddressField}" cannot be empty`);
+      return;
+    }
+
     if (values.guestCount === undefined || values.guestCount <= 0) {
       toast.error("Guest count must be greater than 0");
       return;
@@ -87,14 +118,20 @@ function CreateCustomer() {
       return;
     }
 
-    const request = await axios.post(
-      "http://localhost:3000/api/new-reservation/",
-      { values },
-      { withCredentials: true },
-    );
+    try {
+      const request = await axios.post(
+        "http://localhost:3000/api/new-reservation/",
+        values,
+        { withCredentials: true },
+      );
 
-    if (request) {
-      toast.success("New Customer Has Been Created");
+      if (request) {
+        toast.success("New Customer Has Been Created");
+        setValues(initialValues);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong while creating the customer");
     }
   };
 
@@ -127,12 +164,14 @@ function CreateCustomer() {
                 <Input
                   icon={<User size={16} />}
                   label="Name"
+                  name="name"
                   value={values.name}
                   onChange={handleChange}
                 />
                 <Input
                   icon={<User size={16} />}
                   label="Surname"
+                  name="surname"
                   value={values.surname}
                   onChange={handleChange}
                 />
@@ -141,6 +180,7 @@ function CreateCustomer() {
                   icon={<Mail size={16} />}
                   label="Email"
                   type="email"
+                  name="email"
                   value={values.email}
                   onChange={handleChange}
                 />
@@ -148,6 +188,7 @@ function CreateCustomer() {
                 <Input
                   icon={<Phone size={16} />}
                   label="Phone"
+                  name="phone"
                   value={values.phone}
                   onChange={handleChange}
                 />
@@ -155,20 +196,23 @@ function CreateCustomer() {
                 <Input
                   icon={<CreditCard size={16} />}
                   label="Identity Number"
-                  value={values.identityNumber}
+                  name="identityNumber"
+                  value={values.identityNumber?.toString() ?? ""}
                   onChange={handleChange}
                 />
                 <Input
                   icon={<Calendar size={16} />}
                   label="Birth Date"
                   type="date"
-                  value={values.birthDate}
+                  name="birthDate"
+                  value={values.birthDate?.toString() ?? ""}
                   onChange={handleChange}
                 />
 
                 <Input
                   label="Nationality"
-                  value={values.nationality}
+                  name="nationality"
+                  value={values.nationality?.toString() ?? ""}
                   onChange={handleChange}
                 />
               </div>
@@ -183,14 +227,16 @@ function CreateCustomer() {
                 <Input
                   icon={<MapPin size={16} />}
                   label="Country"
-                  value={values.address?.country}
+                  name="address.country"
+                  value={values.address?.country ?? ""}
                   onChange={handleChange}
                 />
 
                 <Input
                   icon={<MapPin size={16} />}
                   label="City"
-                  value={values.address?.city}
+                  name="address.city"
+                  value={values.address?.city ?? ""}
                   onChange={handleChange}
                 />
 
@@ -200,7 +246,8 @@ function CreateCustomer() {
                   </label>
 
                   <textarea
-                    value={values.address?.details}
+                    name="address.details"
+                    value={values.address?.details ?? ""}
                     onChange={handleChange}
                     rows={4}
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition"
@@ -219,7 +266,8 @@ function CreateCustomer() {
                   icon={<Calendar size={16} />}
                   label="Check In Date"
                   type="date"
-                  value={values.checkInDate}
+                  name="checkInDate"
+                  value={values.checkInDate?.toString() ?? ""}
                   onChange={handleChange}
                 />
 
@@ -227,21 +275,24 @@ function CreateCustomer() {
                   icon={<Calendar size={16} />}
                   label="Check Out Date"
                   type="date"
-                  value={values.address?.details}
+                  name="checkOutDate"
+                  value={values.checkOutDate}
                   onChange={handleChange}
                 />
 
                 <Input
                   label="Guest Count"
                   type="number"
-                  value={values.guestCount?.toString()}
+                  name="guestCount"
+                  value={values.guestCount?.toString() ?? ""}
                   onChange={handleChange}
                 />
 
                 <Input
                   label="Paid Amount"
                   type="number"
-                  value={values.paidAmount?.toString()}
+                  name="paidAmount"
+                  value={values.paidAmount?.toString() ?? ""}
                   onChange={handleChange}
                 />
 
@@ -251,6 +302,8 @@ function CreateCustomer() {
                   </label>
 
                   <select
+                    name="paymentMethod"
+                    value={values.paymentMethod}
                     onChange={handleChange}
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
                   >
@@ -273,6 +326,7 @@ function CreateCustomer() {
                 </label>
 
                 <textarea
+                  name="notes"
                   value={values.notes}
                   onChange={handleChange}
                   rows={5}
@@ -284,7 +338,10 @@ function CreateCustomer() {
           </div>
 
           <div className="flex items-center justify-end gap-3 px-6 py-5 border-t border-slate-200 bg-slate-50">
-            <button className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-white transition cursor-pointer">
+            <button
+              onClick={() => setValues(initialValues)}
+              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-white transition cursor-pointer"
+            >
               Cancel
             </button>
 
@@ -305,14 +362,18 @@ function CreateCustomer() {
 
 function Input({
   label,
+  name,
+  value,
+  onChange,
   type = "text",
   icon,
 }: {
   label: string;
+  name: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   icon?: React.ReactNode;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value?: string;
 }) {
   return (
     <div>
@@ -329,6 +390,9 @@ function Input({
 
         <input
           type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
           className={`w-full rounded-lg border border-slate-200 bg-slate-50 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition ${
             icon ? "pl-10 pr-4" : "px-4"
           }`}
