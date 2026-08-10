@@ -2,14 +2,7 @@ import CreateCustomer from "@/app/components/createCustomer";
 import Sidebar from "@/app/components/sidebar";
 
 function newReservation() {
-  return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 overflow-auto">
-        <CreateCustomer />
-      </main>
-    </div>
-  );
+  return <div className="flex min-h-screen"></div>;
 }
 
 export default newReservation;

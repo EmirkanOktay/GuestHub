@@ -57,7 +57,6 @@ function CreateCustomer() {
       return;
     }
 
-    // Numeric fields (guestCount, paidAmount)
     if (type === "number") {
       setValues((prev) => ({
         ...prev,
@@ -66,7 +65,6 @@ function CreateCustomer() {
       return;
     }
 
-    // Plain fields
     setValues((prev) => ({
       ...prev,
       [name]: value,
@@ -74,7 +72,6 @@ function CreateCustomer() {
   };
 
   const createCustomer = async () => {
-    // Flat required fields (address and numeric fields are checked separately)
     const requiredFields: (keyof CreateCustomerInput)[] = [
       "name",
       "surname",
@@ -83,7 +80,6 @@ function CreateCustomer() {
       "identityNumber",
       "birthDate",
       "nationality",
-      "currentRoom",
       "checkInDate",
       "checkOutDate",
       "paymentMethod",
